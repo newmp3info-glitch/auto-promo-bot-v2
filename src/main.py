@@ -32,9 +32,7 @@ API_ID = int(os.environ.get("API_ID", "12345678"))
 API_HASH = os.environ.get("API_HASH", "YOUR_API_HASH")
 SESSION_STRING = os.environ.get("SESSION_STRING", "userbot")
 
-SOURCE_CHANNEL = "@SuperYonoCode"
-
-# 👇 এখানে আপনার টেস্ট চ্যানেলের ইউজারনেম বসিয়ে দিন (যেমন: @YourTestChannel)
+SOURCE_CHANNEL = "@superyonocode"
 MY_CHANNEL = "@TotalYonoCode"
 
 # ==========================================
@@ -379,6 +377,7 @@ async def promo_listener(event):
     if not matched_game_key:
         return
 
+    # ডট (.) সহ প্রমো কোড (যেমন: rummy.com) ক্যাপচার করার জন্য আপডেট করা হলো
     code_match = re.search(
         r"(?:PROMO CODE|Claim|code)\s*(?:➜|>>|>|:)?\s*`?([A-Za-z0-9\.-]+)`?",
         raw_text,
@@ -408,12 +407,12 @@ async def promo_listener(event):
                 buttons=BUTTONS,
             )
         print(
-            f"✅ Test Post Published: {game_info['title']} (Code: {extracted_code})"
+            f"✅ Post Published: {game_info['title']} (Code: {extracted_code})"
         )
     except Exception as e:
         print(f"❌ Post Error: {e}")
 
 
-print("🤖 Userbot listening to source channel for testing...")
+print("🤖 Userbot listening to source channel...")
 client.start()
 client.run_until_disconnected()
