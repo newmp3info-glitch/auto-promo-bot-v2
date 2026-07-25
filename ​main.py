@@ -1,19 +1,42 @@
+from http.server import BaseHTTPRequestHandler, HTTPServer
 import os
 import re
-from telethon import Button, TelegramClient
+import threading
+from telethon import Button, TelegramClient, events
+
+
+# ==========================================
+# Render Free Web Service Port Handler
+# ==========================================
+class HealthCheckHandler(BaseHTTPRequestHandler):
+
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot is Running Successfully!")
+
+
+def start_dummy_server():
+    port = int(os.environ.get("PORT", 8080))
+    server = HTTPServer(("0.0.0.0", port), HealthCheckHandler)
+    server.serve_forever()
+
+
+# ব্যাকগ্রাউন্ডে ফ্রি ওয়েব পোর্ট চালু করা
+threading.Thread(target=start_dummy_server, daemon=True).start()
 
 # ==========================================
 # Credentials & Setup
 # ==========================================
-API_ID = int(os.environ.get("API_ID", "12345678"))  # Telegram API ID
-API_HASH = os.environ.get("API_HASH", "YOUR_API_HASH")  # Telegram API Hash
+API_ID = int(os.environ.get("API_ID", "12345678"))
+API_HASH = os.environ.get("API_HASH", "YOUR_API_HASH")
 SESSION_STRING = os.environ.get("SESSION_STRING", "userbot")
 
-SOURCE_CHANNEL = "@target_source_channel"  # উৎস চ্যানেল ইউজারনেম
-MY_CHANNEL = "@your_channel_username"  # আপনার চ্যানেল ইউজারনেম
+SOURCE_CHANNEL = "@target_source_channel"
+MY_CHANNEL = "@your_channel_username"
 
 # ==========================================
-# আপনার ৫৭টি গেমের সম্পূর্ণ ডাটাবেস
+# আপনার ৫৭টি গেমের ডাটাবেস
 # ==========================================
 GAME_DATABASE = {
     "yono rummy": {
@@ -306,9 +329,6 @@ GAME_DATABASE = {
 client = TelegramClient(SESSION_STRING, API_ID, API_HASH)
 
 
-# ==========================================
-# স্ক্রিনশটের হুবহু ফরম্যাট জেনারেটর
-# ==========================================
 def build_custom_post(game_data, promo_code):
     title = game_data["title"]
     bonus = game_data["bonus"]
@@ -330,9 +350,6 @@ def build_custom_post(game_data, promo_code):
     return post_text
 
 
-# ==========================================
-# বাটন সেটআপ (Inline Keyboard Buttons)
-# ==========================================
 BUTTONS = [
     [
         Button.url("🎰 New Game 45 ↗", "https://t.me/your_channel_username"),
@@ -345,16 +362,12 @@ BUTTONS = [
 ]
 
 
-# ==========================================
-# মেসজ এক্সট্রাক্ট এবং অটো-পোস্ট লজিক
-# ==========================================
 @client.on(events.NewMessage(chats=SOURCE_CHANNEL))
 async def promo_listener(event):
     raw_text = event.raw_text or ""
     if not raw_text:
         return
 
-    # ১. পোস্ট থেকে গেমের নাম মেলানো
     matched_game_key = None
     for game_key in GAME_DATABASE.keys():
         if game_key in raw_text.lower():
@@ -362,9 +375,8 @@ async def promo_listener(event):
             break
 
     if not matched_game_key:
-        return  # লিস্টের বাইরে গেম হলে স্কিপ করবে
+        return
 
-    # ২. প্রমো কোড আলাদা করা
     code_match = re.search(
         r"(?:PROMO CODE|Claim|code)\s*(?:➜|>>|>|:)?\s*`?([A-Za-z0-9\.-]+)`?",
         raw_text,
@@ -374,11 +386,9 @@ async def promo_listener(event):
         code_match.group(1) if code_match else "Check Mail Box 🎁"
     )
 
-    # ৩. পোস্ট তৈরি করা
     game_info = GAME_DATABASE[matched_game_key]
     final_caption = build_custom_post(game_info, extracted_code)
 
-    # ৪. আপনার চ্যানেলে অটো-পোস্ট করা
     try:
         if event.message.media:
             await client.send_file(
