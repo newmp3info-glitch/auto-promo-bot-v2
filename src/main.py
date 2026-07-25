@@ -368,16 +368,30 @@ async def promo_listener(event):
     if not raw_text:
         return
 
+    # হাইফেন, আন্ডারস্কোর ও বিভিন্ন ড্যাশ রিমুভ করে ম্যাচিং পারফেক্ট করা হলো
+    normalized_text = (
+        raw_text.lower()
+        .replace("-", " ")
+        .replace("_", " ")
+        .replace("–", " ")
+        .replace("—", " ")
+    )
+
     matched_game_key = None
     for game_key in GAME_DATABASE.keys():
-        if game_key in raw_text.lower():
+        normalized_key = (
+            game_key.replace("-", " ")
+            .replace("_", " ")
+            .replace("–", " ")
+            .replace("—", " ")
+        )
+        if normalized_key in normalized_text:
             matched_game_key = game_key
             break
 
     if not matched_game_key:
         return
 
-    # ডট (.) সহ প্রমো কোড (যেমন: rummy.com) ক্যাপচার করার জন্য আপডেট করা হলো
     code_match = re.search(
         r"(?:PROMO CODE|Claim|code)\s*(?:➜|>>|>|:)?\s*`?([A-Za-z0-9\.-]+)`?",
         raw_text,
