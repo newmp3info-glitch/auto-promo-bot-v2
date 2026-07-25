@@ -1,1 +1,0 @@
-# auto-promo-bot-v2
