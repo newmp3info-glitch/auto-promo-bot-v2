@@ -22,7 +22,6 @@ def start_dummy_server():
     server.serve_forever()
 
 
-# ব্যাকগ্রাউন্ডে ফ্রি ওয়েব পোর্ট চালু করা
 threading.Thread(target=start_dummy_server, daemon=True).start()
 
 # ==========================================
@@ -36,7 +35,7 @@ SOURCE_CHANNEL = "@superyonocode"  # সোর্স চ্যানেল
 MY_CHANNEL = "@TotalYonoCode"  # আপনার চ্যানেল
 
 # ==========================================
-# আপনার ৫৭টি গেমের ডাটাবেস
+# গেমের ডাটাবেস
 # ==========================================
 GAME_DATABASE = {
     "yono rummy": {
@@ -366,18 +365,24 @@ BUTTONS = [
 @client.on(events.NewMessage())
 async def promo_listener(event):
     global SOURCE_ID
+
+    # কনসোলে চেক করার জন্য প্রিন্ট করবে মেসেজ আসছে কি না
+    print(
+        f"📩 New message detected! Chat ID: {event.chat_id} | Source ID: {SOURCE_ID}"
+    )
+
     if SOURCE_ID is None:
         return
 
-    # সরাসরি চ্যানেল আইডি দিয়ে নিখুঁতভাবে চেক করা
     if event.chat_id != SOURCE_ID:
         return
 
     raw_text = event.raw_text or ""
+    print(f"📝 Message Text: {raw_text[:50]}...")  # প্রথম ৫০ অক্ষর প্রিন্ট করবে
+
     if not raw_text:
         return
 
-    # হাইফেন, আন্ডারস্কোর ও বিভিন্ন ড্যাশ রিমুভ করে ম্যাচিং পারফেক্ট করা
     normalized_text = (
         raw_text.lower()
         .replace("-", " ")
@@ -399,7 +404,10 @@ async def promo_listener(event):
             break
 
     if not matched_game_key:
+        print("⚠️ No matching game found in database for this post!")
         return
+
+    print(f"✅ Matched Game: {matched_game_key}")
 
     code_match = re.search(
         r"(?:PROMO CODE|Claim|code)\s*(?:➜|>>|>|:)?\s*`?([A-Za-z0-9\.-]+)`?",
@@ -430,10 +438,10 @@ async def promo_listener(event):
                 buttons=BUTTONS,
             )
         print(
-            f"✅ Post Published: {game_info['title']} (Code: {extracted_code})"
+            f"🎉 Successfully Published: {game_info['title']} (Code: {extracted_code})"
         )
     except Exception as e:
-        print(f"❌ Post Error: {e}")
+        print(f"❌ Post Sending Error: {e}")
 
 
 async def main():
@@ -441,7 +449,6 @@ async def main():
     print("🤖 Starting userbot and resolving source channel...")
     await client.start()
 
-    # সোর্স চ্যানেলের সঠিক আইডি বের করে নেওয়া
     source_entity = await client.get_entity(SOURCE_CHANNEL)
     SOURCE_ID = source_entity.id
     print(
