@@ -32,7 +32,7 @@ API_ID = int(os.environ.get("API_ID", "12345678"))
 API_HASH = os.environ.get("API_HASH", "YOUR_API_HASH")
 SESSION_STRING = os.environ.get("SESSION_STRING", "userbot")
 
-SOURCE_CHANNEL = "@superyonocode"
+SOURCE_CHANNEL = "superyonocode"  # @ ছাড়া লিখবেন
 MY_CHANNEL = "@TotalYonoCode"
 
 # ==========================================
@@ -362,13 +362,20 @@ BUTTONS = [
 ]
 
 
-@client.on(events.NewMessage(chats=SOURCE_CHANNEL))
+@client.on(events.NewMessage())
 async def promo_listener(event):
+    # নিরাপদভাবে সোর্স চ্যানেল চেক করা (ইউজারনেম ম্যাচিং)
+    if not event.chat:
+        return
+    chat_username = getattr(event.chat, "username", None)
+    if not chat_username or chat_username.lower() != SOURCE_CHANNEL.lower():
+        return
+
     raw_text = event.raw_text or ""
     if not raw_text:
         return
 
-    # হাইফেন, আন্ডারস্কোর ও বিভিন্ন ড্যাশ রিমুভ করে ম্যাচিং পারফেক্ট করা হলো
+    # হাইফেন, আন্ডারস্কোর ও বিভিন্ন ড্যাশ রিমুভ করে ম্যাচিং পারফেক্ট করা
     normalized_text = (
         raw_text.lower()
         .replace("-", " ")
