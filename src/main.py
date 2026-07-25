@@ -33,7 +33,7 @@ API_ID = int(os.environ.get("API_ID", "12345678"))
 API_HASH = os.environ.get("API_HASH", "YOUR_API_HASH")
 SESSION_STRING = os.environ.get("SESSION_STRING", "userbot")
 
-SOURCE_CHANNEL = "@All_Yono_App_promocod"
+SOURCE_CHANNEL = "SuperYonoCode"
 MY_CHANNEL = "@TotalYonoCode"
 
 # ==========================================
