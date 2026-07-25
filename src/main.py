@@ -1,4 +1,3 @@
-
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import os
 import re
@@ -33,7 +32,9 @@ API_ID = int(os.environ.get("API_ID", "12345678"))
 API_HASH = os.environ.get("API_HASH", "YOUR_API_HASH")
 SESSION_STRING = os.environ.get("SESSION_STRING", "userbot")
 
-SOURCE_CHANNEL = "SuperYonoCode"
+SOURCE_CHANNEL = "@SuperYonoCode"
+
+# 👇 এখানে আপনার টেস্ট চ্যানেলের ইউজারনেম বসিয়ে দিন (যেমন: @YourTestChannel)
 MY_CHANNEL = "@TotalYonoCode"
 
 # ==========================================
@@ -335,19 +336,19 @@ def build_custom_post(game_data, promo_code):
     bonus = game_data["bonus"]
     link = game_data["link"]
 
-    post_text = f"""<b> {title} ➝</b> New Promo Code Fast Claim Now!!💰 
+    post_text = f"""<b>{title} ➝</b> New Promo Code Fast Claim Now!!💰 
 
-<b>🎟️ PROMO CODE </b> ➜ <code>{promo_code}</code>
+🎟️ <b>PROMO CODE</b> ➜ <code>{promo_code}</code>
 
-<blockquote><b>🎁 NEW USERS </b>🎉 SIGNUP BONUS {bonus}</blockquote>
+<blockquote>🎁 <b>NEW USERS</b> 🎉 SIGNUP BONUS {bonus}</blockquote>
 
-<b>🎰 {title.upper()} LINK </b> <a href='{link}'>☞ 𝗗𝗼𝘄𝗻𝗹𝗼𝗮𝗱 𝗡𝗼𝘄</a>📱
+🎰 <b>{title.upper()} LINK</b> ➜ <a href='{link}'>☞ 𝗗𝗼𝘄𝗻𝗹𝗼𝗮𝗱 𝗡𝗼𝘄</a>📱
 
-<b>💰 Minimum Amount ₹100 First Withdrawal</b> 💸
+💰 <b>Minimum Amount ₹100 First Withdrawal</b> 💸
 
-<blockquote><b>🔥 Join this channel</b> to get promo codes first!  <b>Pin this channel </b>so you never miss any important promo code </blockquote>
+<blockquote>🔥 <b>Join this channel</b> to get promo codes first! <b>Pin this channel</b> so you never miss any important promo code</blockquote>
 
-<blockquote><tg-spoiler>#Verified #promocode</tg-spoiler></blockquote>"""
+<tg-spoiler>#Verified #promocode</tg-spoiler>"""
     return post_text
 
 
@@ -407,12 +408,12 @@ async def promo_listener(event):
                 buttons=BUTTONS,
             )
         print(
-            f"✅ Post Published: {game_info['title']} (Code: {extracted_code})"
+            f"✅ Test Post Published: {game_info['title']} (Code: {extracted_code})"
         )
     except Exception as e:
         print(f"❌ Post Error: {e}")
 
 
-print("🤖 Userbot listening to source channel...")
+print("🤖 Userbot listening to source channel for testing...")
 client.start()
 client.run_until_disconnected()
