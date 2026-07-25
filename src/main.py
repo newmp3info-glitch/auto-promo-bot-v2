@@ -32,8 +32,8 @@ API_ID = int(os.environ.get("API_ID", "12345678"))
 API_HASH = os.environ.get("API_HASH", "YOUR_API_HASH")
 SESSION_STRING = os.environ.get("SESSION_STRING", "userbot")
 
-SOURCE_CHANNEL = "superyonocode"  # @ ছাড়া লিখবেন
-MY_CHANNEL = "@TotalYonoCode"
+SOURCE_CHANNEL = "@superyonocode"  # সোর্স চ্যানেল
+MY_CHANNEL = "@TotalYonoCode"  # আপনার চ্যানেল
 
 # ==========================================
 # আপনার ৫৭টি গেমের ডাটাবেস
@@ -327,6 +327,7 @@ GAME_DATABASE = {
 }
 
 client = TelegramClient(SESSION_STRING, API_ID, API_HASH)
+SOURCE_ID = None
 
 
 def build_custom_post(game_data, promo_code):
@@ -364,11 +365,12 @@ BUTTONS = [
 
 @client.on(events.NewMessage())
 async def promo_listener(event):
-    # নিরাপদভাবে সোর্স চ্যানেল চেক করা (ইউজারনেম ম্যাচিং)
-    if not event.chat:
+    global SOURCE_ID
+    if SOURCE_ID is None:
         return
-    chat_username = getattr(event.chat, "username", None)
-    if not chat_username or chat_username.lower() != SOURCE_CHANNEL.lower():
+
+    # সরাসরি চ্যানেল আইডি দিয়ে নিখুঁতভাবে চেক করা
+    if event.chat_id != SOURCE_ID:
         return
 
     raw_text = event.raw_text or ""
@@ -434,6 +436,22 @@ async def promo_listener(event):
         print(f"❌ Post Error: {e}")
 
 
-print("🤖 Userbot listening to source channel...")
-client.start()
-client.run_until_disconnected()
+async def main():
+    global SOURCE_ID
+    print("🤖 Starting userbot and resolving source channel...")
+    await client.start()
+
+    # সোর্স চ্যানেলের সঠিক আইডি বের করে নেওয়া
+    source_entity = await client.get_entity(SOURCE_CHANNEL)
+    SOURCE_ID = source_entity.id
+    print(
+        f"✅ Source Channel Resolved! Listening to ID: {SOURCE_ID} ({SOURCE_CHANNEL})"
+    )
+
+    print("🤖 Userbot is now active and listening...")
+    await client.run_until_disconnected()
+
+
+import asyncio
+
+asyncio.run(main())
