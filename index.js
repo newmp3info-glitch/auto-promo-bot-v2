@@ -63,11 +63,9 @@ async function sendSingleMessage(chatId, text, photo, replyMarkup) {
 
     try {
         if (photo) {
-            // টেলিগ্রামের ১০২৪ ক্যারেক্টার লিমিট হ্যান্ডেল করার জন্য চেক করা হচ্ছে
+            // টেলিগ্রামের ১০২৪ ক্যারেক্টার লিমি트 হ্যান্ডেল করার জন্য সেফটি চেক (ডিজাইন বা টেমপ্লেট অপরিবর্তিত রেখে)
             if (text && text.length > 1024) {
-                // প্রথমে ছবি পাঠানো (ছোট ক্যাপশন বা ফাঁকা রেখে)
                 await bot.sendPhoto(chatId, photo, { reply_markup: replyMarkup });
-                // এরপর মূল বড় লেখাটি সাধারণ টেক্সট মেসেজ হিসেবে পাঠানো
                 sentMsg = await bot.sendMessage(chatId, text, options);
             } else {
                 sentMsg = await bot.sendPhoto(chatId, photo, { caption: text, ...options });
@@ -104,7 +102,7 @@ server.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`);
 });
 
-// Smart formatting function
+// Smart formatting function (আপনার নিজস্ব অরিজিনাল টেমপ্লেট ও ডিজাইন)
 function smartFormatPost(text, entities) {
     if (!text) return '';
 
